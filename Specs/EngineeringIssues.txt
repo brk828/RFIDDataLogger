@@ -1,0 +1,40 @@
+Important Electronic Integration Rules:
+1. Common Ground: Ensure that the negative/ground wire (GND) of your 1S logger battery pack and the GND of your 2S scanner battery pack are solidly tied together. Even though the power lines are isolated, they must share a common ground reference for the serial data and interrupt voltages to register properly.
+2. Voltage Matching: Ensure your RFID scanner outputs data at 3.3V Logic. If your scanner runs at 5V, it will damage the Artemis pins. If it is a 5V scanner, you must route the TX line through a cheap, bidirectional Logic Level Shifter before plugging it into the Artemis RX and Wake-up pins.
+The RFID board is the WL-134 scanner. I want to power the logger system with a simple 1S LifePO4 battery and the scanner will be powered with a 2S LifePO4 battery. There will be issues with the voltages and logic between the two systems as noted below:
+To integrate your two separate batteries (1S and 2S) and keep the signals safe, use the following layout:
+1. Power & Ground Connections
+* Connect your 2S LiFePO4 battery to a 5V Linear/LDO regulator to cleanly power the WL-134 (Pin 1: +5V/9V and Pin 4: GND).
+* Connect your 1S LiFePO4 battery directly to the Artemis 3V3 and GND pins.
+* Crucial: Connect the GND of the Artemis to the GND of the WL-134 so they share a common ground reference. [1, 2]
+2. Wiring through the Level Shifter
+The level shifter passes the signal safely from the 5V domain down to the 3.3V domain:
+From Component/Pin
+To Level Shifter Pin
+Shifter Output Pin
+Final Destination (Artemis Pin)
+Artemis 3V3
+LV (Low Voltage)
+�
+Power for shifter low-side
+WL-134 5V Rail
+HV (High Voltage)
+�
+Power for shifter high-side
+Shared Ground
+GND
+GND
+Ground reference for both sides
+WL-134 Pin 3 (TX)
+H1 (High I/O 1)
+L1 (Low I/O 1)
+RX1 (Serial Input Pin)
+WL-134 Pin 3 (TX)
+H2 (High I/O 2)
+L2 (Low I/O 2)
+Pin 4 (Wake-up Interrupt Pin)
+Note: Splicing the 5V TX line into both H1 and H2 on the high side allows it to safely output two isolated 3.3V lines (L1 and L2) to your separate serial and interrupt pins on the Artemis.
+Why Linear/LDO power matters for the WL-134
+The official WL-134 datasheet specifically highlights that using a switching DC-DC buck converter to step down your 2S battery to 5V will severely degrade the RFID reading distance. Switching regulators introduce electromagnetic noise that interferes with the 134.2 kHz antenna field. Always use a linear low-dropout (LDO) regulator or a dedicated battery source to supply the WL-134 module. [1, 2, 3]
+Would you like some recommendations on a noise-free 5V LDO regulator to run the WL-134 off your 2S battery pack, or is your hardware team handling the power distribution layout?
+
