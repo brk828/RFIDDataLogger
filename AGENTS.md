@@ -51,6 +51,13 @@ the hardware bring-up/deployment/retrieval lifecycle.
 - When changing the record size or memory map, update both the firmware and
   `Specs/PROJECT_SPECS.md` together.
 
+## Future Direction
+- Considering migrating the field firmware's target MCU away from the Artemis to an
+  Arduino Nano or Nano Every. **Nano Every is preferred** over the classic Nano 3 for
+  this move, primarily for lower power consumption. No final decision yet — the
+  `Code/MKRZeroPrototype/` sketch is WL-134 bring-up work on a *different* board (MKR
+  Zero) and is not part of this migration path.
+
 ## Testing
 There is no CI/build harness in this repo (Arduino IDE / arduino-cli target). When
 changing code, verify manually:
